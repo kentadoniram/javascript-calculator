@@ -6,35 +6,40 @@ function App() {
   const [currentVal, setCurrentVal] = useState("0");
 
   const endsWithOperator = /[*/+-]$/;
-  const endsWithNegative = /\d[x/+-]{1}-$/;
+  const endsWithNegative = /\d[*/+-]{1}-$/;
 
   const handleNumber = (event) => {
     const number = event.target.value;
-    if (
-      (currentVal === "0" || endsWithOperator.test(currentVal)) &&
-      currentVal.length <= 20
-    ) {
+    if ((currentVal === "0" || display === "0") && currentVal.length <= 20) {
       setCurrentVal(number);
-      setDisplay(display + number);
-    } else if (currentVal.length <= 20) {
+      setDisplay(number);
+    } else if (currentVal.length <= 20 && !endsWithOperator.test(currentVal)) {
       setCurrentVal(currentVal + number);
+      setDisplay(display + number);
+    } else {
+      setCurrentVal(number);
       setDisplay(display + number);
     }
   };
 
   const handleOperator = (event) => {
     const operator = event.target.value;
-    if (!endsWithOperator.test(display)) {
+
+    if (display.includes("=")) {
       setDisplay(currentVal + operator);
+      setCurrentVal(currentVal + operator);
+    } else if (!endsWithOperator.test(display) && display !== "") {
+      setDisplay(display + operator);
       setCurrentVal(operator);
     } else if (endsWithOperator.test(display)) {
-      setDisplay(display.replace(endsWithOperator, operator));
-    } else if (endsWithNegative.test(display)) {
-      setDisplay(display + operator);
+      if (endsWithNegative.test(display)) {
+        setDisplay(display.slice(0, 1) + operator);
+        setCurrentVal(operator);
+      } else if (operator === "-") {
+        setCurrentVal(operator);
+        setDisplay(display + operator);
+      }
     }
-    // if (!endsWithOperator.test(display)) {
-    //   setDisplay(display + operator);
-    // }
   };
 
   const handleClear = () => {
@@ -48,60 +53,28 @@ function App() {
       setDisplay(display + "=" + eval(display));
     } else if (endsWithOperator.test(display)) {
       const a = display.slice(0, -1);
-      setDisplay(a);
+      setDisplay(a + "=" + eval(a));
+      setCurrentVal(eval(a));
     }
-    // const results = String(parseExpression(display));
-    // setDisplay(results);
   };
 
-  const handleDecimal = () => {
-    // const regex = /(\d+)$/g;
-    // const regex2 = /(\d+\.)$/g;
-    // if (regex.test(display) || regex.test(display)) {
-    //   setDisplay(display + ".");
-    // }
+  const handleDecimal = (e) => {
+    const decimal = e.target.value;
+    if (!currentVal.includes(".")) {
+      setCurrentVal(currentVal + decimal);
+      setDisplay(display + decimal);
+    }
   };
 
   const handleDelete = () => {
-    if (display.length !== 1) {
+    if (display.length !== 1 && !display.includes("=")) {
       setDisplay(display.slice(0, display.length - 1));
     } else {
-      setDisplay("0");
+      setDisplay("");
     }
   };
 
   const handlePercent = () => {};
-
-  // const parseExpression = (expression) => {
-  //   const regex = /(\d+|\+|-|\*|\/)/g;
-  //   console.log(typeof expression);
-  //   const token = expression.match(regex);
-
-  //   let result = 0;
-  //   let currentOperator = "+";
-
-  //   for (const each of token) {
-  //     if (each === "+" || each === "-" || each === "*" || each === "/") {
-  //       currentOperator = each;
-  //     } else {
-  //       const number = parseFloat(each);
-  //       if (currentOperator === "+") {
-  //         result += number;
-  //       } else if (currentOperator === "-") {
-  //         result -= number;
-  //       } else if (currentOperator === "*") {
-  //         result *= number;
-  //       } else if (currentOperator === "/") {
-  //         if (number !== 0) {
-  //           result /= number;
-  //         } else {
-  //           return "Division by zero";
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return result;
-  // };
 
   return (
     <div className="App">
@@ -119,7 +92,12 @@ function App() {
         <button id="percent" onClick={handlePercent} value="%">
           %
         </button>
-        <button id="divide" onClick={handleOperator} value="/">
+        <button
+          id="divide"
+          className="operator"
+          onClick={handleOperator}
+          value="/"
+        >
           ÷
         </button>
         <button id="seven" onClick={handleNumber} value="7">
@@ -131,7 +109,12 @@ function App() {
         <button id="nine" onClick={handleNumber} value="9">
           9
         </button>
-        <button id="multiply" onClick={handleOperator} value="*">
+        <button
+          id="multiply"
+          className="operator"
+          onClick={handleOperator}
+          value="*"
+        >
           X
         </button>
         <button id="four" onClick={handleNumber} value="4">
@@ -143,7 +126,12 @@ function App() {
         <button id="six" onClick={handleNumber} value="6">
           6
         </button>
-        <button id="subtract" onClick={handleOperator} value="-">
+        <button
+          id="subtract"
+          className="operator"
+          onClick={handleOperator}
+          value="-"
+        >
           -
         </button>
         <button id="one" onClick={handleNumber} value="1">
@@ -155,7 +143,12 @@ function App() {
         <button id="three" onClick={handleNumber} value="3">
           3
         </button>
-        <button id="add" onClick={handleOperator} value="+">
+        <button
+          id="add"
+          className="operator"
+          onClick={handleOperator}
+          value="+"
+        >
           +
         </button>
         <button className="large" id="zero" onClick={handleNumber} value="0">

@@ -23,5 +23,4 @@ Note On Calculator Logic: It should be noted that there are two main schools of 
 * **Immediate Execution Logic:** `11.5`
 * **Formula/Expression Logic:** `32.5`
 
-**Demo**
-https://kentadoniram.github.io/javascript-calculator/
+**Demo Page:** https://kentadoniram.github.io/javascript-calculator/
